@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../models/User.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -38,7 +38,7 @@ exports.loginUser  = async (req, res) => {
 // Get user profile
 exports.getUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.find(req.body);
         res.json(user);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -51,7 +51,7 @@ exports.updateUser = async (req, res) => {
 
     try {
         const updatedUser  = await User.findByIdAndUpdate(req.user.id, { fitnessGoals, preferences }, { new: true });
-        res.json(updatedUser );
+        res.json(updatedUser);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

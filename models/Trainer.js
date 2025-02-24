@@ -1,40 +1,13 @@
-const mongoose = require('mongoose');
 
-const TrainerSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        match: /.+\@.+\..+/,
-    },
-    qualifications: {
-        type: String,
-        required: true,
-    },
-    expertise: {
-        type: [String], // Array of areas of expertise (e.g., ['yoga', 'nutrition'])
-        required: true,
-    },
-    profilePicture: {
-        type: String, // URL to the profile picture
-        default: '',
-    },
-    bio: {
-        type: String,
-        default: '',
-    },
-    ratings: {
-        type: [Number], // Array of ratings
-        default: [],
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
+import mongoose from 'mongoose';
+
+const trainerSchema = new mongoose.Schema({
+    username: { type: String, required: true },
+    name: { type: String, required: true },
+    specialty: { type: String, required: true },
+    experience: { type: Number, required: true }, // in years
 });
 
-module.exports = mongoose.model('Trainer', TrainerSchema);
+const Trainer = mongoose.model('Trainer', trainerSchema);
+
+export default Trainer;

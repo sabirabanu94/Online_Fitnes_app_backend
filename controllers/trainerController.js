@@ -2,58 +2,32 @@ const Trainer = require('../models/Trainer');
 const {authenticate} = require('../middleware/auth');
 
 // Create a new trainer
-exports.createTrainer = async (req, res) => {
-    const { name, email, qualifications, expertise, profilePicture, bio } = req.body;
-
-    try {
-        const newTrainer = new Trainer({ name, email, qualifications, expertise, profilePicture, bio });
-        await newTrainer.save();
-        res.status(201).json({ message: 'Trainer created successfully' });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+const createNewTrainer = (req, res) => {
+    const { body } = req; // Get the request body
+    if (!body.name || !body.specialty) {
+        return res.status(400).send({ status: "FAILED", error: "Missing required fields" }); // Validate input
     }
+    const newTrainer = trainerService.createNewTrainer(body); // Create the trainer
+    res.status(201).send({ status: "OK", data: newTrainer }); // Send the created trainer as a response
 };
 
+//update trainer
+const updateOneTrainer = (req, res) => {
+    const { trainerId } = req.params; // Get the trainer ID from the URL parameters
+    const updatedTrainer = trainerService.updateOneTrainer(trainerId, req.body); // Update the trainer
+    if (!updatedTrainer) {
+        return res.status(404).send({ status: "FAILED", error: "Trainer not found" }); // Handle not found
+    }
+    res.send({ status: "OK", data: updatedTrainer }); // Send the updated trainer as a response
+};
 // Get all trainers
-exports.getAllTrainers = async (req, res) => {
-    try {
-        const trainers = await Trainer.find();
-        res.json(trainers);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+const deleteOneTrainer = (req, res) => {
+    const { trainerId } = req.params; // Get the trainer ID from the URL parameters
+    const result = trainerService.deleteOneTrainer(trainerId); // Delete the trainer
+    if (!result) {
+        return res.status(404).send({ status: "FAILED", error: "Trainer not found" }); // Handle not found
     }
+    res.status(204).send({ status: "OK" }); // Send a success response
 };
 
-// Get trainer by ID
-exports.getTrainerById = async (req, res) => {
-    try {
-        const trainer = await Trainer.findById(req.params.id);
-        if (!trainer) return res.status(404).json({ message: 'Trainer not found' });
-        res.json(trainer);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
 
-// Update trainer profile
-exports.updateTrainer = async (req, res) => {
-    const { name, qualifications, expertise, profilePicture, bio } = req.body;
-
-    try {
-        const updatedTrainer = await Trainer.findByIdAndUpdate(req.params.id, { name, qualifications, expertise, profilePicture, bio }, { new: true });
-        res.json(updatedTrainer);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-// Delete trainer
-exports.deleteTrainer = async (req, res) => {
-    try {
-        await Trainer.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Trainer deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-
-};
